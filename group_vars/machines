@@ -1,0 +1,6 @@
+osBase: 'https://mirrors.aliyun.com/centos/7/os/x86_64'
+osUpdate: 'https://mirrors.aliyun.com/centos/7/updates/x86_64'
+osExtras: 'https://mirrors.aliyun.com/centos/7/extras/x86_64'
+epel: 'https://mirrors.aliyun.com/epel/7/x86_64'
+dockerResource: 'https://download.docker.com/linux/centos/7/x86_64/stable'
+nginx: 'http://nginx.org/packages/centos/7/x86_64'

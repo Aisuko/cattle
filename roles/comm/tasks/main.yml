@@ -1,0 +1,120 @@
+---
+
+- name: Set rc.local can be execution
+  file: path=/etc/rc.d/rc.local owner=root group=root mode=0755
+
+- name: Set timezone to Asia/Shanghai
+  lineinfile: dest=/etc/profile regexp="^export TZ=" line='export TZ="Asia/Shanghai"'
+
+- name: Disable SELinux
+  selinux:
+    state: disabled
+
+- name: Dsiable Firewalld
+  systemd:
+    state: stopped
+    name: firewalld
+    enabled: no
+    masked: yes
+  tags:
+    - disable_firewalld
+
+- name: Add or modify nofile soft limit 
+  pam_limits:
+    domain: '*'
+    limit_type: '-'
+    limit_item: nofile
+    value: 655360
+
+- name: Set ipv4 forward
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: 1
+    sysctl_set: yes
+
+- name: Add centos base yum repositories 
+  yum_repository:
+    name: CentOS-Base
+    description: CenteOS Base YUM repo
+    file: CentOS-Base
+    baseurl: "{{osBase}}"
+    gpgcheck: no
+    enabled: yes
+
+- name: Add centos update yum repositories 
+  yum_repository:
+    name: CentOS-Update
+    description: CenteOS Update YUM repo
+    file: CentOS-Base
+    baseurl: "{{osUpdate}}"
+    gpgcheck: no
+    enabled: yes
+
+- name: Add centos extra yum repositories 
+  yum_repository:
+    name: CentOS-Update
+    description: CenteOS Extras YUM repo
+    file: CentOS-Base
+    baseurl: "{{osExtras}}"
+    gpgcheck: no
+    enabled: yes
+
+- name: Add epel repository
+  yum_repository:
+    name: epel
+    description: EPEL YUM repo
+    baseurl: "{{epel}}"
+    gpgcheck: no
+    enabled: yes
+
+- name: Add docker repositories 
+  yum_repository:
+    name: docker
+    description: Docker CE YUM repo
+    file: docker
+    baseurl: "{{dockerResource}}"
+    gpgcheck: no
+    enabled: yes
+
+- name: Add nginx repositories 
+  yum_repository:
+    name: nginx
+    description: nginx offical repositories
+    file: nginx
+    baseurl: "{{nginx}}"
+    gpgcheck: no
+    enabled: yes
+
+- name: Install comm software
+  yum: name={{ item }} state=present
+  with_items:
+    - zip
+    - unzip
+    - vim
+    - wget
+    - curl
+    - bash-completion
+    - docker-ce
+
+- name: Restart docker
+  systemd:
+    state: started
+    name: docker
+    enabled: yes
+    masked: no
+
+
+- name: Add user rancher
+  user: name=rancher group=docker
+  sudo: True
+#   tags:
+#     - add_user
+- name: Add passwd for rancher
+# TODO Need modify by user
+  shell: 'echo rancher | passwd --stdin rancher'
+  sudo: True
+
+- name: ssh-copy
+  authorized_key: user=rancher key="{{ lookup('file', '/Users/bowen/.ssh/id_rsa.pub') }}"
+  tags:
+    - sshkey
