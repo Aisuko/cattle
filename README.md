@@ -1,5 +1,5 @@
 # cattle
-The anisble script that init the infrastructure for kubernetes.
+The Ansible script that init the infrastructure for Kubernetes.
 
 
 ### Contributor
