@@ -13,9 +13,15 @@ Tips: The os we use is Centos7, you can change it for yourself.
 
 * Install Ansible on Mac OSX 
 
-  * Brew Install
+  * Use `brew` Command:
     
     ```brew install ansible```
+
+* Install Ansible on RHEL/CentOS 
+
+  * Use  `yum`  Command:
+    
+    ```yum install ansible -y```
 
 * How to use?
   
@@ -30,6 +36,48 @@ Tips: The os we use is Centos7, you can change it for yourself.
 
   ```ansible-playbook -i templ.host templ.yml```
 
+
+**Notice**
+
+If you are macOS ,When you use the ansible command to connect to a remote host via ssh and password, you will see below error:
+
+```
+to use the 'ssh' connection type with passwords, you must install the sshpass program
+```
+
+And you well want use brew install it:
+
+```
+brew install sshpass
+```
+
+Unfortunately, you will receive the following tips：
+
+```
+Error: No available formula with the name "sshpass"
+We won't add sshpass because it makes it too easy for novice SSH users to
+ruin SSH's security.
+```
+
+By default, brew official removed the package for security reasons, so we chose other installation methods.
+
+```
+brew install http://git.io/sshpass.rb
+```
+
+If you are RHEL/CentOS ,you can use yum command:
+
+```
+yum install sshpass -y
+```
+
+Finally, you can use ansible via ssh username with password to connect remote host, for example in you inventory:
+
+```
+[web]
+10.16.18.194 ansible_ssh_user=USERNAME ansible_ssh_pass='MYPASSWORD' ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+```
+---
 
 ```
  ~/Desktop/playbook   develop ● ? ⍟1  ansible-playbook -i templ.host templ.yml
